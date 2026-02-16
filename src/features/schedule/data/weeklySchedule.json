@@ -1,0 +1,22 @@
+[
+  {
+    "day": "Monday",
+    "items": [
+      { "time": "16:00", "title": "HTML Basics Webinar", "type": "Lesson" },
+      { "time": "17:30", "title": "Homework Q&A", "type": "Support" }
+    ]
+  },
+  {
+    "day": "Wednesday",
+    "items": [
+      { "time": "16:00", "title": "CSS Colors Workshop", "type": "Lesson" }
+    ]
+  },
+  {
+    "day": "Friday",
+    "items": [
+      { "time": "15:00", "title": "JavaScript Starter Session", "type": "Lesson" },
+      { "time": "17:00", "title": "Mentor Feedback", "type": "Review" }
+    ]
+  }
+]

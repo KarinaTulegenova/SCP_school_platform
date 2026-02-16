@@ -1,0 +1,23 @@
+[
+  {
+    "id": "hw-1",
+    "title": "Create a Personal HTML Card",
+    "type": "file",
+    "dueDate": "2026-03-05",
+    "status": "Pending"
+  },
+  {
+    "id": "hw-2",
+    "title": "Color Palette Mini Project",
+    "type": "link",
+    "dueDate": "2026-03-08",
+    "status": "Graded"
+  },
+  {
+    "id": "hw-3",
+    "title": "Interactive Button with JS",
+    "type": "file",
+    "dueDate": "2026-03-11",
+    "status": "Resubmit"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "html-intro",
+    "title": "Intro to HTML",
+    "description": "Build your first page with headings, paragraphs, and lists.",
+    "status": "in_progress",
+    "videoUrl": "https://example.com/videos/intro-to-html",
+    "duration": "12:30"
+  },
+  {
+    "id": "css-colors",
+    "title": "Colors in CSS",
+    "description": "Learn color names, hex values, and gradients for better design.",
+    "status": "locked",
+    "videoUrl": "https://example.com/videos/colors-in-css",
+    "duration": "09:40"
+  },
+  {
+    "id": "first-script",
+    "title": "First Script",
+    "description": "Write your first JavaScript and make a button interactive.",
+    "status": "locked",
+    "videoUrl": "https://example.com/videos/first-script",
+    "duration": "15:05"
+  }
+]

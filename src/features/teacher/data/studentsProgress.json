@@ -1,0 +1,20 @@
+[
+  {
+    "id": "st-1",
+    "name": "Aliya",
+    "grade": "A-",
+    "completionPercent": 82
+  },
+  {
+    "id": "st-2",
+    "name": "Miras",
+    "grade": "B+",
+    "completionPercent": 67
+  },
+  {
+    "id": "st-3",
+    "name": "Nursultan",
+    "grade": "A",
+    "completionPercent": 91
+  }
+]
