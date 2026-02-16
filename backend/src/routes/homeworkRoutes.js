@@ -5,7 +5,7 @@ import { authenticate, authorizePermissions } from '../middleware/auth.js';
 
 const router = express.Router();
 
-const MAX_ATTACHMENT_SIZE = 1_500_000;
+const MAX_ATTACHMENT_SIZE = 5_000_000;
 
 const normalizeReviewStatus = (submission) => {
   if (submission.reviewStatus) {
@@ -111,7 +111,7 @@ router.post('/:homeworkId/submit', authenticate, authorizePermissions('homework:
       }
 
       if (attachment.size <= 0 || attachment.size > MAX_ATTACHMENT_SIZE) {
-        return res.status(400).json({ message: `Attachment size must be between 1 and ${MAX_ATTACHMENT_SIZE} bytes` });
+        return res.status(400).json({ message: 'Attachment size must be between 1 byte and 5MB' });
       }
     }
 

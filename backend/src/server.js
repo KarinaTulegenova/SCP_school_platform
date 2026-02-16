@@ -17,7 +17,7 @@ app.use(
     credentials: true
   })
 );
-app.use(express.json());
+app.use(express.json({ limit: '8mb' }));
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' });
@@ -31,6 +31,9 @@ app.use('/api/users', usersRoutes);
 
 app.use((err, _req, res, _next) => {
   console.error(err);
+  if (err?.type === 'entity.too.large') {
+    return res.status(413).json({ message: 'Payload too large. Try a smaller file (up to 5MB).' });
+  }
   res.status(500).json({ message: 'Internal server error' });
 });
 

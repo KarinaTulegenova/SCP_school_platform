@@ -40,6 +40,14 @@ function HomeworkModule(): JSX.Element {
       reader.readAsDataURL(file);
     });
 
+  const resolveApiErrorMessage = (error: unknown): string | null => {
+    if (!error || typeof error !== 'object') return null;
+    const maybeData = (error as { data?: unknown }).data;
+    if (!maybeData || typeof maybeData !== 'object') return null;
+    const maybeMessage = (maybeData as { message?: unknown }).message;
+    return typeof maybeMessage === 'string' ? maybeMessage : null;
+  };
+
   const handleSubmit = async (homeworkId: string, type: 'file' | 'link'): Promise<void> => {
     const submissionUrl = submissionById[homeworkId]?.trim();
     const note = noteById[homeworkId]?.trim() ?? '';
@@ -73,8 +81,9 @@ function HomeworkModule(): JSX.Element {
       }
 
       setFeedback(t('homework.submitSuccess'));
-    } catch {
-      setFeedback(t('homework.submitError'));
+    } catch (error) {
+      const apiMessage = resolveApiErrorMessage(error);
+      setFeedback(apiMessage ?? t('homework.submitError'));
     }
   };
 
