@@ -2,9 +2,11 @@ import { BarChart3, BookOpenCheck, CalendarCheck2, FileSpreadsheet, ShieldCheck,
 import LessonDashboard from '../../lessons/components/LessonDashboard';
 import HomeworkModule from '../../homework/components/HomeworkModule';
 import Schedule from '../../schedule/components/Schedule';
+import UserManagement from '../../users/components/UserManagement';
 import studentsProgressData from '../../teacher/data/studentsProgress.json';
 import ProtectedRoute from '../../../components/routing/ProtectedRoute';
-import { UserRole } from '../../../store/slices/authSlice';
+import RequirePermission from '../../../components/routing/RequirePermission';
+import { UserRole } from '../../../shared/types/domain';
 
 interface StudentProgress {
   id: string;
@@ -49,22 +51,30 @@ function TeacherPanel(): JSX.Element {
         </div>
       </section>
 
+      <RequirePermission permission="user:manage">
+        <UserManagement />
+      </RequirePermission>
+
       <section className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <UploadCloud className="mb-2 h-5 w-5 text-indigo-600" aria-hidden="true" />
-          <h3 className="font-semibold text-slate-700">Upload Homework</h3>
-          <p className="text-sm text-slate-500">Attach files or learning links.</p>
-        </div>
+        <RequirePermission permission="lesson:publish">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <UploadCloud className="mb-2 h-5 w-5 text-indigo-600" aria-hidden="true" />
+            <h3 className="font-semibold text-slate-700">Upload Homework</h3>
+            <p className="text-sm text-slate-500">Attach files or learning links.</p>
+          </div>
+        </RequirePermission>
         <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <BookOpenCheck className="mb-2 h-5 w-5 text-indigo-600" aria-hidden="true" />
           <h3 className="font-semibold text-slate-700">Add Video Lessons</h3>
           <p className="text-sm text-slate-500">Publish metadata, URL, and duration.</p>
         </div>
-        <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <BarChart3 className="mb-2 h-5 w-5 text-indigo-600" aria-hidden="true" />
-          <h3 className="font-semibold text-slate-700">Monitor Progress</h3>
-          <p className="text-sm text-slate-500">Track grades and completion trends.</p>
-        </div>
+        <RequirePermission permission="progress:read:class">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+            <BarChart3 className="mb-2 h-5 w-5 text-indigo-600" aria-hidden="true" />
+            <h3 className="font-semibold text-slate-700">Monitor Progress</h3>
+            <p className="text-sm text-slate-500">Track grades and completion trends.</p>
+          </div>
+        </RequirePermission>
       </section>
     </div>
   );
@@ -72,24 +82,34 @@ function TeacherPanel(): JSX.Element {
 
 function AdminPanel(): JSX.Element {
   return (
-    <section className="grid gap-4 md:grid-cols-3">
-      <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <Users className="mb-2 h-5 w-5 text-indigo-600" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-slate-800">User Management</h2>
-        <p className="text-sm text-slate-500">Manage students, teachers, and admins.</p>
-      </article>
+    <section className="grid gap-4">
+      <RequirePermission permission="user:manage">
+        <UserManagement />
+      </RequirePermission>
 
-      <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <CalendarCheck2 className="mb-2 h-5 w-5 text-indigo-600" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-slate-800">Schedule Editor</h2>
-        <p className="text-sm text-slate-500">Adjust webinars and class calendars.</p>
-      </article>
+      <div className="grid gap-4 md:grid-cols-3">
+      <RequirePermission permission="user:manage">
+        <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <Users className="mb-2 h-5 w-5 text-indigo-600" aria-hidden="true" />
+          <h2 className="text-lg font-semibold text-slate-800">User Management</h2>
+          <p className="text-sm text-slate-500">Manage students, teachers, and admins.</p>
+        </article>
+      </RequirePermission>
+
+      <RequirePermission permission="schedule:manage">
+        <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <CalendarCheck2 className="mb-2 h-5 w-5 text-indigo-600" aria-hidden="true" />
+          <h2 className="text-lg font-semibold text-slate-800">Schedule Editor</h2>
+          <p className="text-sm text-slate-500">Adjust webinars and class calendars.</p>
+        </article>
+      </RequirePermission>
 
       <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <FileSpreadsheet className="mb-2 h-5 w-5 text-indigo-600" aria-hidden="true" />
         <h2 className="text-lg font-semibold text-slate-800">Platform Analytics</h2>
         <p className="text-sm text-slate-500">Review engagement, retention, and outcomes.</p>
       </article>
+      </div>
     </section>
   );
 }
@@ -107,7 +127,7 @@ function DashboardLayout({ role }: DashboardLayoutProps): JSX.Element {
 
   if (role === 'TEACHER') {
     return (
-      <ProtectedRoute allowedRoles={['TEACHER', 'ADMIN']}>
+      <ProtectedRoute allowedRoles={['TEACHER', 'ADMIN']} requiredPermissions={['progress:read:class']}>
         <TeacherPanel />
         <div className="mt-6">
           <Schedule />
@@ -117,7 +137,7 @@ function DashboardLayout({ role }: DashboardLayoutProps): JSX.Element {
   }
 
   return (
-    <ProtectedRoute allowedRoles={['ADMIN']}>
+    <ProtectedRoute allowedRoles={['ADMIN']} requiredPermissions={['user:manage']}>
       <div className="space-y-6">
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-emerald-800">
           <p className="inline-flex items-center gap-2 font-semibold">

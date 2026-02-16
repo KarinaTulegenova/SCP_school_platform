@@ -1,5 +1,5 @@
 import { CheckCircle2, Clock3, Lock, PlayCircle, Video } from 'lucide-react';
-import { Lesson } from '../../features/lessons/lessonsSlice';
+import { Lesson } from '../../shared/types/domain';
 
 interface LessonCardProps {
   lesson: Lesson;

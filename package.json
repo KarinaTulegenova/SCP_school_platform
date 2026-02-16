@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:api": "npm --prefix backend run dev",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "install:api": "npm --prefix backend install"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.7",

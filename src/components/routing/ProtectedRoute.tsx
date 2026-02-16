@@ -1,15 +1,25 @@
 import { ReactNode } from 'react';
 import { ShieldAlert } from 'lucide-react';
 import { useAppSelector } from '../../store/hooks';
-import { UserRole } from '../../store/slices/authSlice';
+import { UserRole } from '../../shared/types/domain';
+import { hasPermission, Permission } from '../../features/auth/permissions';
 
 interface ProtectedRouteProps {
   allowedRoles?: UserRole[];
+  requiredPermissions?: Permission[];
   children: ReactNode;
 }
 
-function ProtectedRoute({ allowedRoles, children }: ProtectedRouteProps): JSX.Element {
-  const { isAuthenticated, role } = useAppSelector((state) => state.auth);
+function ProtectedRoute({ allowedRoles, requiredPermissions, children }: ProtectedRouteProps): JSX.Element {
+  const { isAuthenticated, role, status } = useAppSelector((state) => state.auth);
+
+  if (status === 'loading') {
+    return (
+      <div className="rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-sm backdrop-blur">
+        <p className="text-slate-600">Checking access...</p>
+      </div>
+    );
+  }
 
   if (!isAuthenticated || !role) {
     return (
@@ -26,6 +36,14 @@ function ProtectedRoute({ allowedRoles, children }: ProtectedRouteProps): JSX.El
     return (
       <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 shadow-sm">
         <p className="font-semibold text-rose-700">Access denied for this role.</p>
+      </div>
+    );
+  }
+
+  if (requiredPermissions && requiredPermissions.some((permission) => !hasPermission(role, permission))) {
+    return (
+      <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 shadow-sm">
+        <p className="font-semibold text-rose-700">Missing required permission.</p>
       </div>
     );
   }
