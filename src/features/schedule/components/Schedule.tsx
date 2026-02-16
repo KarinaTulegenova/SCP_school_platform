@@ -4,8 +4,10 @@ import { useAddScheduleItemMutation, useDeleteScheduleItemMutation, useGetSchedu
 import { useAppSelector } from '../../../store/hooks';
 import { hasPermission } from '../../auth/permissions';
 import { ScheduleItemPayload } from '../../../shared/types/domain';
+import { translateDay, useI18n } from '../../../shared/i18n';
 
 function Schedule(): JSX.Element {
+  const { t, lang } = useI18n();
   const { data: schedule = [], isLoading, isError } = useGetScheduleQuery();
   const role = useAppSelector((state) => state.auth.role);
   const canManage = hasPermission(role, 'schedule:manage');
@@ -22,11 +24,11 @@ function Schedule(): JSX.Element {
   });
 
   if (isLoading) {
-    return <p className="text-sm text-slate-500">Loading schedule...</p>;
+    return <p className="text-sm text-slate-500">{t('schedule.loading')}</p>;
   }
 
   if (isError) {
-    return <p className="text-sm font-medium text-rose-600">Failed to load schedule.</p>;
+    return <p className="text-sm font-medium text-rose-600">{t('schedule.error')}</p>;
   }
 
   const handleAdd = async (event: FormEvent<HTMLFormElement>): Promise<void> => {
@@ -34,10 +36,10 @@ function Schedule(): JSX.Element {
     setFeedback('');
     try {
       await addItem(form).unwrap();
-      setFeedback('Schedule item created.');
+      setFeedback(t('schedule.created'));
       setForm((prev) => ({ ...prev, title: '' }));
     } catch {
-      setFeedback('Failed to create schedule item.');
+      setFeedback(t('schedule.createError'));
     }
   };
 
@@ -51,19 +53,27 @@ function Schedule(): JSX.Element {
 
     try {
       await updateItem({ itemId: editingItemId, payload: form }).unwrap();
-      setFeedback('Schedule item updated.');
+      setFeedback(t('schedule.updated'));
       setEditingItemId(null);
       setForm({ day: 'Monday', time: '16:00', title: '', type: 'Lesson' });
     } catch {
-      setFeedback('Failed to update schedule item.');
+      setFeedback(t('schedule.updateError'));
     }
+  };
+
+  const translateScheduleType = (value: string): string => {
+    const lower = value.toLowerCase();
+    if (lower === 'lesson') return lang === 'ru' ? 'Урок' : 'Сабақ';
+    if (lower === 'support') return lang === 'ru' ? 'Поддержка' : 'Қолдау';
+    if (lower === 'review') return lang === 'ru' ? 'Проверка' : 'Тексеру';
+    return value;
   };
 
   return (
     <section className="rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-sm backdrop-blur-md">
       <div className="mb-4 flex items-center gap-2">
         <CalendarDays className="h-5 w-5 text-indigo-600" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-slate-800">Weekly Schedule</h2>
+        <h2 className="text-lg font-semibold text-slate-800">{t('schedule.title')}</h2>
       </div>
       {canManage && (
         <form className="mb-4 grid gap-2 md:grid-cols-5" onSubmit={(event) => void handleAdd(event)}>
@@ -71,28 +81,28 @@ function Schedule(): JSX.Element {
             className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
             value={form.day}
             onChange={(event) => setForm((prev) => ({ ...prev, day: event.target.value }))}
-            placeholder="Day"
+            placeholder={t('schedule.day')}
             required
           />
           <input
             className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
             value={form.time}
             onChange={(event) => setForm((prev) => ({ ...prev, time: event.target.value }))}
-            placeholder="Time"
+            placeholder={t('schedule.time')}
             required
           />
           <input
             className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
             value={form.title}
             onChange={(event) => setForm((prev) => ({ ...prev, title: event.target.value }))}
-            placeholder="Title"
+            placeholder={t('schedule.itemTitle')}
             required
           />
           <input
             className="rounded-lg border border-slate-300 px-3 py-2 text-sm"
             value={form.type}
             onChange={(event) => setForm((prev) => ({ ...prev, type: event.target.value }))}
-            placeholder="Type"
+            placeholder={t('schedule.type')}
             required
           />
           {editingItemId ? (
@@ -105,7 +115,7 @@ function Schedule(): JSX.Element {
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-70"
             >
               <Pencil className="h-4 w-4" aria-hidden="true" />
-              Save
+              {t('common.save')}
             </button>
           ) : (
             <button
@@ -114,7 +124,7 @@ function Schedule(): JSX.Element {
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-70"
             >
               <Plus className="h-4 w-4" aria-hidden="true" />
-              Add
+              {t('common.add')}
             </button>
           )}
         </form>
@@ -124,7 +134,7 @@ function Schedule(): JSX.Element {
       <div className="grid gap-4 md:grid-cols-3">
         {schedule.map((day) => (
           <article key={day.day} className="rounded-xl bg-slate-50 p-4">
-            <h3 className="mb-2 font-semibold text-slate-700">{day.day}</h3>
+            <h3 className="mb-2 font-semibold text-slate-700">{translateDay(day.day, lang)}</h3>
             <ul className="space-y-2">
               {day.items.map((item) => (
                 <li key={item.itemId} className="rounded-lg bg-white p-3 shadow-sm">
@@ -134,7 +144,7 @@ function Schedule(): JSX.Element {
                       {item.time}
                     </span>
                     <span className="rounded-full bg-indigo-100 px-2 py-1 text-xs font-semibold text-indigo-700">
-                      {item.type}
+                      {translateScheduleType(item.type)}
                     </span>
                   </div>
                   <div className="mt-2 flex items-center justify-between gap-2">
@@ -154,9 +164,9 @@ function Schedule(): JSX.Element {
                           onClick={async () => {
                             try {
                               await deleteItem({ itemId: item.itemId }).unwrap();
-                              setFeedback('Schedule item deleted.');
+                              setFeedback(t('schedule.deleted'));
                             } catch {
-                              setFeedback('Failed to delete schedule item.');
+                              setFeedback(t('schedule.deleteError'));
                             }
                           }}
                           className="rounded-md border border-rose-200 bg-rose-50 px-2 py-1 text-rose-700"

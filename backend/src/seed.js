@@ -9,7 +9,7 @@ const lessonSeed = [
     lessonId: 'html-intro',
     title: 'Intro to HTML',
     description: 'Build your first page with headings, paragraphs, and lists.',
-    videoUrl: 'https://example.com/videos/intro-to-html',
+    videoUrl: 'https://www.youtube-nocookie.com/embed/vY2xUc4TVmY',
     duration: '12:30',
     order: 1
   },
@@ -17,7 +17,7 @@ const lessonSeed = [
     lessonId: 'css-colors',
     title: 'Colors in CSS',
     description: 'Learn color names, hex values, and gradients for better design.',
-    videoUrl: 'https://example.com/videos/colors-in-css',
+    videoUrl: 'https://www.youtube-nocookie.com/embed/LwbKb2J8iy8',
     duration: '09:40',
     order: 2
   },
@@ -25,7 +25,7 @@ const lessonSeed = [
     lessonId: 'first-script',
     title: 'First Script',
     description: 'Write your first JavaScript and make a button interactive.',
-    videoUrl: 'https://example.com/videos/first-script',
+    videoUrl: 'https://www.youtube-nocookie.com/embed/DHjqpvDnNGE',
     duration: '15:05',
     order: 3
   }
@@ -96,9 +96,15 @@ export const seedDatabase = async () => {
     }
   }
 
-  if ((await Lesson.countDocuments()) === 0) {
-    await Lesson.insertMany(lessonSeed);
-  }
+  await Promise.all(
+    lessonSeed.map((lesson) =>
+      Lesson.updateOne(
+        { lessonId: lesson.lessonId },
+        { $set: lesson },
+        { upsert: true }
+      )
+    )
+  );
 
   if ((await Homework.countDocuments()) === 0) {
     await Homework.insertMany(homeworkSeed);

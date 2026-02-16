@@ -18,6 +18,12 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface RegisterRequest {
+  fullName: string;
+  email: string;
+  password: string;
+}
+
 export type LessonStatus = 'locked' | 'in_progress' | 'completed';
 
 export interface Lesson {
@@ -39,11 +45,25 @@ export interface HomeworkItem {
   status: HomeworkStatus;
   submitted: boolean;
   submissionUrl: string;
+  note?: string;
+  feedback?: string;
+  reviewedAt?: string | null;
+  submittedAt?: string | null;
+  fileName?: string;
+  submissionType?: 'file' | 'link';
+}
+
+export interface HomeworkAttachmentPayload {
+  fileName: string;
+  mimeType: string;
+  size: number;
+  contentBase64: string;
 }
 
 export interface HomeworkSubmissionPayload {
   homeworkId: string;
-  submissionUrl: string;
+  submissionUrl?: string;
+  attachment?: HomeworkAttachmentPayload;
   note?: string;
 }
 
@@ -51,9 +71,37 @@ export interface HomeworkSubmissionResult {
   id: string;
   homeworkId: string;
   submissionUrl: string;
+  submissionType: 'file' | 'link';
+  fileName: string;
   note: string;
-  status: 'submitted';
+  status: HomeworkStatus;
+  feedback: string;
+  reviewedAt: string | null;
   submittedAt: string;
+}
+
+export interface HomeworkSubmissionReview {
+  id: string;
+  homeworkId: string;
+  homeworkTitle: string;
+  studentId: string;
+  studentName: string;
+  studentEmail: string;
+  submissionType: 'file' | 'link';
+  submissionUrl: string;
+  fileName: string;
+  note: string;
+  status: HomeworkStatus;
+  feedback: string;
+  submittedAt: string;
+  reviewedAt: string | null;
+  fileDataUrl: string;
+}
+
+export interface ReviewHomeworkPayload {
+  submissionId: string;
+  status: Exclude<HomeworkStatus, 'Pending'>;
+  feedback?: string;
 }
 
 export interface ScheduleItem {

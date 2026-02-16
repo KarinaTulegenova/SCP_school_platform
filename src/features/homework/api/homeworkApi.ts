@@ -1,5 +1,11 @@
 import { baseApi } from '../../../shared/api/baseApi';
-import { HomeworkItem, HomeworkSubmissionPayload, HomeworkSubmissionResult } from '../../../shared/types/domain';
+import {
+  HomeworkItem,
+  HomeworkSubmissionPayload,
+  HomeworkSubmissionResult,
+  HomeworkSubmissionReview,
+  ReviewHomeworkPayload
+} from '../../../shared/types/domain';
 
 export const homeworkApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -17,8 +23,31 @@ export const homeworkApi = baseApi.injectEndpoints({
         body
       }),
       invalidatesTags: [{ type: 'Homework', id: 'LIST' }]
+    }),
+    getHomeworkSubmissions: builder.query<HomeworkSubmissionReview[], void>({
+      query: () => ({
+        url: '/homework/submissions',
+        method: 'GET'
+      }),
+      providesTags: [{ type: 'Homework', id: 'SUBMISSIONS' }]
+    }),
+    reviewHomeworkSubmission: builder.mutation<HomeworkSubmissionReview, ReviewHomeworkPayload>({
+      query: ({ submissionId, ...body }) => ({
+        url: `/homework/submissions/${submissionId}/review`,
+        method: 'PATCH',
+        body
+      }),
+      invalidatesTags: [
+        { type: 'Homework', id: 'LIST' },
+        { type: 'Homework', id: 'SUBMISSIONS' }
+      ]
     })
   })
 });
 
-export const { useGetHomeworkQuery, useSubmitHomeworkMutation } = homeworkApi;
+export const {
+  useGetHomeworkQuery,
+  useSubmitHomeworkMutation,
+  useGetHomeworkSubmissionsQuery,
+  useReviewHomeworkSubmissionMutation
+} = homeworkApi;

@@ -15,6 +15,7 @@ The platform demonstrates role-based learning workflows with a clean, light UI:
 ## Main Features
 
 - JWT authentication with email/password login
+- Self-registration for students via `/api/auth/register`
 - Role-Based Access Control (RBAC) with protected UI sections
 - Permission-based access checks in UI and API
 - Redux Toolkit state management
@@ -111,6 +112,9 @@ Frontend: `http://localhost:5173`
 - `npm run dev:api` - start backend API server
 - `npm run install:api` - install backend dependencies
 - `npm run build` - build for production
+- `npm run typecheck` - run TypeScript checks
+- `npm run test` - run backend tests (`node:test`)
+- `npm run check` - run typecheck + tests + production build
 - `npm run preview` - preview production build
 
 ## Notes

@@ -3,10 +3,12 @@ import { Trash2, UserPlus } from 'lucide-react';
 import { useAppSelector } from '../../../store/hooks';
 import { CreateUserPayload, UserRole } from '../../../shared/types/domain';
 import { useCreateUserMutation, useDeleteUserMutation, useGetUsersQuery, useUpdateUserRoleMutation } from '../api/usersApi';
+import { useI18n } from '../../../shared/i18n';
 
 const roleOptions: UserRole[] = ['STUDENT', 'TEACHER', 'ADMIN'];
 
 function UserManagement(): JSX.Element {
+  const { t } = useI18n();
   const currentRole = useAppSelector((state) => state.auth.role);
   const { data: users = [], isLoading, isError } = useGetUsersQuery();
   const [createUser, { isLoading: isCreating }] = useCreateUserMutation();
@@ -29,32 +31,32 @@ function UserManagement(): JSX.Element {
 
     try {
       await createUser(form).unwrap();
-      setFeedback('User created successfully.');
+      setFeedback(t('users.created'));
       setForm({ fullName: '', email: '', password: '', role: currentRole === 'TEACHER' ? 'STUDENT' : 'STUDENT' });
     } catch {
-      setFeedback('Failed to create user. Check role limits and fields.');
+      setFeedback(t('users.createError'));
     }
   };
 
   if (isLoading) {
-    return <p className="text-sm text-slate-500">Loading users...</p>;
+    return <p className="text-sm text-slate-500">{t('users.loading')}</p>;
   }
 
   if (isError) {
-    return <p className="text-sm font-medium text-rose-600">Failed to load users.</p>;
+    return <p className="text-sm font-medium text-rose-600">{t('users.error')}</p>;
   }
 
   return (
     <section className="rounded-2xl border border-slate-200 bg-white/70 p-6 shadow-sm backdrop-blur-md">
       <div className="mb-4 flex items-center gap-2">
         <UserPlus className="h-5 w-5 text-indigo-600" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-slate-800">User Management</h2>
+        <h2 className="text-lg font-semibold text-slate-800">{t('users.title')}</h2>
       </div>
 
       <form className="mb-6 grid gap-3 md:grid-cols-4" onSubmit={(event) => void handleCreate(event)}>
         <input
           className="rounded-xl border border-slate-300 px-3 py-2 text-sm"
-          placeholder="Full name"
+          placeholder={t('users.fullName')}
           value={form.fullName}
           onChange={(event) => setForm((prev) => ({ ...prev, fullName: event.target.value }))}
           required
@@ -84,7 +86,7 @@ function UserManagement(): JSX.Element {
           >
             {(currentRole === 'TEACHER' ? ['STUDENT'] : roleOptions).map((role) => (
               <option key={role} value={role}>
-                {role}
+                {t(`role.${role}`)}
               </option>
             ))}
           </select>
@@ -93,7 +95,7 @@ function UserManagement(): JSX.Element {
             disabled={isCreating}
             className="rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-70"
           >
-            Add
+            {t('users.add')}
           </button>
         </div>
       </form>
@@ -116,13 +118,13 @@ function UserManagement(): JSX.Element {
                   try {
                     await updateRole({ userId: user.id, role: event.target.value as UserRole }).unwrap();
                   } catch {
-                    setFeedback('Failed to update role.');
+                    setFeedback(t('users.roleError'));
                   }
                 }}
               >
                 {roleOptions.map((role) => (
                   <option key={role} value={role}>
-                    {role}
+                    {t(`role.${role}`)}
                   </option>
                 ))}
               </select>
@@ -134,7 +136,7 @@ function UserManagement(): JSX.Element {
                     try {
                       await deleteUser({ userId: user.id }).unwrap();
                     } catch {
-                      setFeedback('Failed to delete user.');
+                      setFeedback(t('users.deleteError'));
                     }
                   }}
                   className="rounded-lg border border-rose-200 bg-rose-50 px-2 py-1 text-xs text-rose-700"

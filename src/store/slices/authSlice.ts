@@ -45,7 +45,25 @@ const authSlice = createSlice({
       state.status = 'loading';
       state.error = null;
     });
+    builder.addMatcher(authApi.endpoints.register.matchPending, (state) => {
+      state.status = 'loading';
+      state.error = null;
+    });
     builder.addMatcher(authApi.endpoints.login.matchFulfilled, (state, action) => {
+      state.status = 'authenticated';
+      state.user = action.payload.user;
+      state.role = action.payload.user.role;
+      state.accessToken = action.payload.accessToken;
+      state.refreshToken = action.payload.refreshToken;
+      state.isAuthenticated = true;
+      state.error = null;
+      saveAuthSession({
+        accessToken: action.payload.accessToken,
+        refreshToken: action.payload.refreshToken,
+        user: action.payload.user
+      });
+    });
+    builder.addMatcher(authApi.endpoints.register.matchFulfilled, (state, action) => {
       state.status = 'authenticated';
       state.user = action.payload.user;
       state.role = action.payload.user.role;
@@ -89,6 +107,16 @@ const authSlice = createSlice({
       clearAuthSession();
       state.status = 'error';
       state.error = action.error?.message ?? 'Unable to sign in';
+      state.user = null;
+      state.role = null;
+      state.accessToken = null;
+      state.refreshToken = null;
+      state.isAuthenticated = false;
+    });
+    builder.addMatcher(authApi.endpoints.register.matchRejected, (state, action) => {
+      clearAuthSession();
+      state.status = 'error';
+      state.error = action.error?.message ?? 'Unable to register';
       state.user = null;
       state.role = null;
       state.accessToken = null;

@@ -4,7 +4,7 @@
     "title": "Intro to HTML",
     "description": "Build your first page with headings, paragraphs, and lists.",
     "status": "in_progress",
-    "videoUrl": "https://example.com/videos/intro-to-html",
+    "videoUrl": "https://www.youtube-nocookie.com/embed/vY2xUc4TVmY",
     "duration": "12:30"
   },
   {
@@ -12,7 +12,7 @@
     "title": "Colors in CSS",
     "description": "Learn color names, hex values, and gradients for better design.",
     "status": "locked",
-    "videoUrl": "https://example.com/videos/colors-in-css",
+    "videoUrl": "https://www.youtube-nocookie.com/embed/LwbKb2J8iy8",
     "duration": "09:40"
   },
   {
@@ -20,7 +20,7 @@
     "title": "First Script",
     "description": "Write your first JavaScript and make a button interactive.",
     "status": "locked",
-    "videoUrl": "https://example.com/videos/first-script",
+    "videoUrl": "https://www.youtube-nocookie.com/embed/DHjqpvDnNGE",
     "duration": "15:05"
   }
 ]
